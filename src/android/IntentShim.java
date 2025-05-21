@@ -168,8 +168,12 @@ public class IntentShim extends CordovaPlugin {
             }
 
             BroadcastReceiver broadcastReceiver = newBroadcastReceiver();
-
-            this.cordova.getActivity().registerReceiver(broadcastReceiver, filter);
+            // using flag as mentioned in https://developer.android.com/reference/android/content/Context#registerReceiver(android.content.BroadcastReceiver,%20android.content.IntentFilter,%20int) 
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                this.cordova.getActivity().registerReceiver(broadcastReceiver, filter, RECEIVER_EXPORTED);
+            } else {
+                this.cordova.getActivity().registerReceiver(broadcastReceiver, filter);
+            }
             receiverCallbacks.put(broadcastReceiver, callbackContext);
 
             callbackContext.sendPluginResult(result);
